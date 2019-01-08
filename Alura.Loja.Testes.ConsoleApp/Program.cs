@@ -10,15 +10,50 @@ namespace Alura.Loja.Testes.ConsoleApp
     {
         static void Main(string[] args)
         {
-            GravarUsandoAdoNet();
+            //GravarUsandoAdoNet();
+            //GravarUsandoEntity();
+            RecuperarProdutos();
+            Console.WriteLine("Aplicação finalizada, click enter para fechar!");
+            Console.ReadLine();
+        }
+
+        private static void RecuperarProdutos()
+        {
+            IList<Produto> produtos = null;
+            using (var contexto = new LojaContext())
+            {
+                produtos = contexto.Produtos.ToList();
+            }
+
+            produtos.ToList().ForEach(p => Console.WriteLine(p));
+            
+        }
+
+        private static void GravarUsandoEntity()
+        {
+            Produto p = new Produto
+            {
+                Nome = "Harry Potter e a Ordem da Fênix",
+                Categoria = "Livros",
+                Preco = 19.89
+            };
+
+            using (var contexto = new LojaContext())
+            {
+                contexto.Produtos.Add(p);
+                contexto.SaveChanges();
+            }
+
         }
 
         private static void GravarUsandoAdoNet()
         {
-            Produto p = new Produto();
-            p.Nome = "Harry Potter e a Ordem da Fênix";
-            p.Categoria = "Livros";
-            p.Preco = 19.89;
+            Produto p = new Produto
+            {
+                Nome = "Harry Potter e a Ordem da Fênix",
+                Categoria = "Livros",
+                Preco = 19.89
+            };
 
             using (var repo = new ProdutoDAO())
             {
