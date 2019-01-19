@@ -8,8 +8,8 @@ namespace Alura.Loja.Testes.ConsoleApp
         public string Nome { get; internal set; }
         public string Categoria { get; internal set; }
         public double PrecoUnitario { get; internal set; }
-        public string Unidade { get; private set; }
-        public string Observacoes { get; private set; }
+        public string Unidade { get; internal set; }
+        public string Observacoes { get; internal set; }
 
         public override bool Equals(object obj)
         {

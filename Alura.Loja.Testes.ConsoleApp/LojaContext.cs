@@ -9,6 +9,7 @@ namespace Alura.Loja.Testes.ConsoleApp
         /// Exemplo de criação do ORM, lembrando que a classe que está implementando o DbSet e a classe da aplicação.
         /// </summary>
         public DbSet<Produto> Produtos { get; set; }
+        public DbSet<Compra> Compras { get; set; }
 
         public LojaContext()
         { }
