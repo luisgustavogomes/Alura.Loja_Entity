@@ -125,6 +125,34 @@ namespace Alura.Loja.Testes.ConsoleApp
                 repo.Adicionar(p);
             }
         }
-    }
 
+        private static void TrabalhandoRelacionamentoUmParaMuitos()
+        {
+            var pao = new Produto()
+            {
+                Nome = "Pão",
+                PrecoUnitario = 0.40,
+                Unidade = "Un",
+                Categoria = "Padaria"
+            };
+
+            var compra = new Compra
+            {
+                Quantidade = 6,
+                Produto = pao
+            };
+            compra.PrecoTotal = pao.PrecoUnitario * compra.Quantidade;
+
+            using (var contexto = new LojaContext())
+            {
+                var serviceProvider = contexto.GetInfrastructure<IServiceProvider>();
+                var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
+                loggerFactory.AddProvider(SqlLoggerProvider.Create());
+
+                contexto.Compras.Add(compra);
+                ExibeEntries(contexto.ChangeTracker.Entries());
+                contexto.SaveChanges();
+            }
+        }
+    }
 }

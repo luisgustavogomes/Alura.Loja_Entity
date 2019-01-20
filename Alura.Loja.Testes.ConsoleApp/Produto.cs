@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Alura.Loja.Testes.ConsoleApp
 {
@@ -10,6 +11,7 @@ namespace Alura.Loja.Testes.ConsoleApp
         public double PrecoUnitario { get; internal set; }
         public string Unidade { get; internal set; }
         public string Observacoes { get; internal set; }
+        public IList<Promocao> Promocoes { get; set; }
 
         public override bool Equals(object obj)
         {

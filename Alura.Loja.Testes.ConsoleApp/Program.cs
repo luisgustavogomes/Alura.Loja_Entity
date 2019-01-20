@@ -14,20 +14,17 @@ namespace Alura.Loja.Testes.ConsoleApp
     {
         public static void Main(string[] args)
         {
-            var pao = new Produto()
+            var promocaoDePascoa = new Promocao
             {
-                Nome = "Pão",
-                PrecoUnitario = 0.40,
-                Unidade = "Un",
-                Categoria = "Padaria"
+                Descricao = "Pascoa",
+                DataInicio = DateTime.Now,
+                DataTermino = DateTime.Now.AddMonths(3)
             };
+            promocaoDePascoa.Produtos.Add(new Produto());
+            promocaoDePascoa.Produtos.Add(new Produto());
+            promocaoDePascoa.Produtos.Add(new Produto());
 
-            var compra = new Compra
-            {
-                Quantidade = 6,
-                Produto = pao
-            };
-            compra.PrecoTotal = pao.PrecoUnitario * compra.Quantidade;
+
 
             using (var contexto = new LojaContext())
             {
@@ -35,17 +32,13 @@ namespace Alura.Loja.Testes.ConsoleApp
                 var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
                 loggerFactory.AddProvider(SqlLoggerProvider.Create());
 
-                contexto.Compras.Add(compra);
-                ExibeEntries(contexto.ChangeTracker.Entries());
-                contexto.SaveChanges();
-            }
 
+            }
 
             Console.WriteLine("Aplicação finalizada, click enter para fechar!");
             Console.ReadLine();
         }
 
+
     }
-
-
 }
