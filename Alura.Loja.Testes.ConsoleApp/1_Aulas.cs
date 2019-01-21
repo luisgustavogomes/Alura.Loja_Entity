@@ -81,22 +81,7 @@ namespace Alura.Loja.Testes.ConsoleApp
 
         }
 
-        private static void GravarUsandoEntity()
-        {
-            Produto p = new Produto
-            {
-                Nome = "Harry Potter e a Ordem da Fênix",
-                Categoria = "Livros",
-                PrecoUnitario = 19.89
-            };
-
-            using (var contexto = new LojaContext())
-            {
-                contexto.Produtos.Add(p);
-                contexto.SaveChanges();
-            }
-
-        }
+        
 
         private static void AtualizarProduto()
         {
