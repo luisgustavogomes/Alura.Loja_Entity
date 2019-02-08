@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -15,22 +16,110 @@ namespace Alura.Loja.Testes.ConsoleApp
         public static void Main(string[] args)
         {
 
-            using (var contexto = new LojaContext())
-            {
-                var clientes = contexto.Clientes.ToList();
-                var cli = clientes.First();
-                cli.Nome = "Luis";
-                Console.WriteLine(cli);
-
-
-                contexto.SaveChanges();
-
-            }
-
-
 
             Console.WriteLine("Aplicação finalizada, click enter para fechar!");
             Console.ReadKey();
+        }
+
+        private static void SelecionandoItemEmColecoesRelacionadas()
+        {
+            using (var contexto = new LojaContext())
+            {
+                var loggerFactory = contexto.GetInfrastructure<IServiceProvider>().GetService<ILoggerFactory>();
+                loggerFactory.AddProvider(SqlLoggerProvider.Create());
+
+                var produto = contexto
+                        .Produtos
+                        .Include(p => p.Compras)
+                        .FirstOrDefault();
+
+                contexto.Entry(produto)
+                    .Collection(p => p.Compras)
+                    .Query()
+                    .Where(c => c.PrecoTotal > 10)
+                    .Load();
+
+                foreach (var item in produto.Compras)
+                {
+                    Console.WriteLine(item);
+                }
+            }
+        }
+
+        private static void SelecionandoUmParaUm()
+        {
+            using (var contexto = new LojaContext())
+            {
+                var loggerFactory = contexto.GetInfrastructure<IServiceProvider>().GetService<ILoggerFactory>();
+                loggerFactory.AddProvider(SqlLoggerProvider.Create());
+
+                var cliente = contexto
+                    .Clientes
+                    .Include(c => c.EnderecoDeEntrega)
+                    .FirstOrDefault();
+                Console.WriteLine(cliente.EnderecoDeEntrega.Logradouro);
+
+                var produto = contexto
+                    .Produtos
+                    .Include(p => p.Compras)
+                    .Where(p => p.Id == 8)
+                    .FirstOrDefault();
+
+                foreach (var item in produto.Compras)
+                {
+                    Console.WriteLine(item);
+                }
+            }
+        }
+
+        private static void SelecionandoMuitosParaMuitos()
+        {
+            using (var contexto = new LojaContext())
+            {
+                var loggerFactory = contexto.GetInfrastructure<IServiceProvider>().GetService<ILoggerFactory>();
+                loggerFactory.AddProvider(SqlLoggerProvider.Create());
+
+                var promocao = contexto
+                    .Promocoes
+                    .Include(p => p.Produtos)
+                    .ThenInclude(pp => pp.Produto)
+                    .FirstOrDefault();
+                Console.WriteLine("\n==================\n");
+                foreach (var item in promocao.Produtos)
+                {
+                    Console.WriteLine(item.Produto);
+                }
+            }
+        }
+
+        private static void IncluirPromocao()
+        {
+            using (var contexto = new LojaContext())
+            {
+                var serviceProvider = contexto.GetInfrastructure<IServiceProvider>();
+                var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
+                loggerFactory.AddProvider(SqlLoggerProvider.Create());
+
+                var promocao = new Promocao()
+                {
+                    Descricao = "Janeiro",
+                    DataInicio = new DateTime(2018, 1, 1),
+                    DataTermino = new DateTime(2018, 1, 31)
+                };
+
+                var produtos = contexto
+                    .Produtos
+                    .Where(p => p.Categoria == "Bebidas")
+                    .ToList();
+                foreach (var item in produtos)
+                {
+                    promocao.IncluirProduto(item);
+                }
+
+                contexto.Promocoes.Add(promocao);
+                ExibeEntries(contexto.ChangeTracker.Entries());
+                contexto.SaveChanges();
+            }
         }
 
         private static void UmParaUm()
